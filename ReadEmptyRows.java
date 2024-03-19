@@ -18,6 +18,7 @@ public class ReadEmptyRows {
     public static void main(String[] args) {
         Path readFile = Paths.get("CustomerEmptyRows.txt").toAbsolutePath();
         Path createFile = Paths.get("IndexRead.txt").toAbsolutePath();
+        StringBuilder sb;
         
         createFile(createFile);
 
@@ -33,7 +34,7 @@ public class ReadEmptyRows {
 
             readByIndex(customerFile, readIndex, index);
 
-            customerFile.close(); // Fix the variable name here
+            customerFile.close(); 
         } catch (IOException | NumberFormatException e) {
             System.err.println("Error: " + e.getMessage());
         }
@@ -43,6 +44,7 @@ public class ReadEmptyRows {
         try {
             int position = (index - 1) * REC_SIZE.length();
             ByteBuffer buff = ByteBuffer.allocate(REC_SIZE.length());
+            String foundData = "Data in index " + index + ": ";
         
             readChannel.position(position);
             int bytesRead = readChannel.read(buff);
@@ -51,7 +53,9 @@ public class ReadEmptyRows {
                 byte[] data = new byte[buff.limit()];
                 buff.get(data);
                 String record = new String(data);
+                String addString = new String(foundData);
                 writeChannel.position(writeChannel.size());
+                writeChannel.write(ByteBuffer.wrap(addString.getBytes()));
                 writeChannel.write(ByteBuffer.wrap(record.getBytes()));
             } else {
                 System.out.println("End of file reached.");
